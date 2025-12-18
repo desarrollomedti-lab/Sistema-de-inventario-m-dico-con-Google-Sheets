@@ -3,7 +3,7 @@
 // ============================================
 
 // CONFIGURACIÓN - ¡REEMPLAZA ESTA URL!
-const API_URL = 'https://script.google.com/macros/s/AKfycbw0p0O2CJf4dgDsll-TajmfNfpkGGGBpDXcrVuWyt2hk7YYeyN8M0Jt8LzCvv99Z0Qm/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbw4eUaaZ2SFxfrZ6nCzPR2r1qaHQ5OWGDgipL-oHdmNyHEx6RlkI3pnb4d41Jk6X8nF/exec';
 
 // VARIABLES GLOBALES
 let productos = [];
