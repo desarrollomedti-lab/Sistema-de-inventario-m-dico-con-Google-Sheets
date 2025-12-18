@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MED CENTRO MÉDICO - Inventario</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../public/logo.png" alt="MED CENTRO MÉDICO" class="logo-img">
+                    <span>MED CENTRO MÉDICO</span>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Usuario</span>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="app-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="inventario.html" class="nav-link active"><i class="fas fa-boxes"></i> Inventario</a></li>
+                <li><a href="tickets.html" class="nav-link" data-role="enfermeria,admin"><i class="fas fa-clipboard-list"></i> Nuevo Ticket</a></li>
+                <li><a href="seguimiento.html" class="nav-link" data-role="almacen,enfermeria,admin"><i class="fas fa-search"></i> Seguimiento Tickets</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="app-main">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-warehouse"></i> Gestión de Inventario</h1>
+                <button class="btn btn-primary" id="btnNuevoProducto">
+                    <i class="fas fa-plus"></i> Nuevo Producto
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-list"></i> Lista de Productos</h2>
+                    <div class="header-actions">
+                        <input type="text" id="searchProducto" placeholder="Buscar producto..." class="form-control" style="width: 250px; margin-right: 10px;">
+                        <div id="adminControls" style="display: none; margin-left: 10px;">
+                            <button class="btn btn-info" id="btnGestionCategorias">
+                                <i class="fas fa-tags"></i> Categorías
+                            </button>
+                            <button class="btn btn-info" id="btnGestionUnidades">
+                                <i class="fas fa-balance-scale"></i> Unidades
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table" id="tablaInventario">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Stock</th>
+                                    <th>Mínimo</th>
+                                    <th>Unidad</th>
+                                    <th>Ubicación</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productosBody">
+                                <!-- Los productos se cargarán con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- PAGINACIÓN -->
+                    <div class="pagination-container" style="margin-top: 20px; text-align: center;">
+                        <div id="paginationProductos"></div>
+                        <small class="text-muted" id="paginationInfo">Mostrando 0 de 0 productos</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row-columnas">
+                <!-- SECCIÓN DE SALIDA DE PRODUCTOS SOLAMENTE -->
+                <div class="columna-izquierda">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-arrow-up"></i> Salida de Productos</h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="formSalida">
+                                <div class="form-group">
+                                    <label for="productoSalida">Producto *</label>
+                                    <select id="productoSalida" class="form-control" required>
+                                        <option value="">Seleccione un producto</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cantidadSalida">Cantidad *</label>
+                                    <input type="number" id="cantidadSalida" class="form-control" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="motivoSalida">Motivo *</label>
+                                    <input type="text" id="motivoSalida" class="form-control" placeholder="Ej: Ticket #, Uso interno..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ticketIdSalida">Ticket ID (opcional)</label>
+                                    <input type="text" id="ticketIdSalida" class="form-control" placeholder="Ej: #1001">
+                                </div>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-check"></i> Registrar Salida
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PANEL DE ALERTAS DE STOCK BAJO -->
+                <div class="columna-derecha">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-exclamation-triangle"></i> Alertas de Stock</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="alertasStockContainer">
+                                <!-- Alertas se cargarán aquí -->
+                            </div>
+                            <button class="btn btn-sm btn-info mt-2" onclick="mostrarTodosProductosBajos()">
+                                <i class="fas fa-list"></i> Ver todos los productos bajos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Modal para nuevo producto -->
+    <div id="modalProducto" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-box"></i> Nuevo Producto</h3>
+                <button class="modal-close" onclick="closeModal('modalProducto')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formProducto">
+                    <div class="form-group">
+                        <label for="codigoProducto">Código de Barras</label>
+                        <input type="text" id="codigoProducto" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreProducto">Nombre del Producto *</label>
+                        <input type="text" id="nombreProducto" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoriaProducto">Categoría *</label>
+                        <select id="categoriaProducto" class="form-control" required>
+                            <option value="">Seleccione categoría</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="stockInicial">Stock Inicial</label>
+                                <input type="number" id="stockInicial" class="form-control" min="0" value="0" required>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="minStock">Stock Mínimo *</label>
+                                <input type="number" id="minStock" class="form-control" min="1" value="10" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="unidadProducto">Unidad de Medida *</label>
+                                <select id="unidadProducto" class="form-control" required>
+                                    <option value="">Seleccione unidad</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="ubicacionProducto">Ubicación en Almacén *</label>
+                                <input type="text" id="ubicacionProducto" class="form-control" placeholder="Ej: Estante A1" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" onclick="closeModal('modalProducto')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Gestión de Categorías (SOLO ADMIN) -->
+    <div id="modalCategorias" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-tags"></i> Gestión de Categorías</h3>
+                <button class="modal-close" onclick="closeModal('modalCategorias')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nueva Categoría</label>
+                    <div class="input-group">
+                        <input type="text" id="nuevaCategoria" class="form-control" placeholder="Ej: Medicamentos, Insumos...">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" onclick="agregarCategoria()">
+                                <i class="fas fa-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="categorias-list" id="listaCategorias" style="max-height: 300px; overflow-y: auto; margin-top: 20px;">
+                    <!-- Lista de categorías dinámicas -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Gestión de Unidades (SOLO ADMIN) -->
+    <div id="modalUnidades" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-balance-scale"></i> Gestión de Unidades</h3>
+                <button class="modal-close" onclick="closeModal('modalUnidades')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nueva Unidad</label>
+                    <div class="input-group">
+                        <input type="text" id="nuevaUnidad" class="form-control" placeholder="Ej: litro, caja, unidad...">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" onclick="agregarUnidad()">
+                                <i class="fas fa-plus"></i> Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="unidades-list" id="listaUnidades" style="max-height: 300px; overflow-y: auto; margin-top: 20px;">
+                    <!-- Lista de unidades dinámicas -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver todos los productos bajos en stock -->
+    <div id="modalProductosBajos" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Productos Bajos en Stock</h3>
+                <button class="modal-close" onclick="closeModal('modalProductosBajos')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Stock Actual</th>
+                                <th>Stock Mínimo</th>
+                                <th>Diferencia</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaProductosBajos">
+                            <!-- Productos bajos se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2025 MED CENTRO MÉDICO. Sistema de Gestión de Inventario.</p>
+            <p><small>v1.0.0</small></p>
+        </div>
+    </footer>
+    
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/inventario.js"></script>
+</body>
+</html>

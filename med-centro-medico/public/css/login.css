@@ -1,0 +1,262 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1a2980, #26d0ce);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    padding: 20px;
+}
+
+/* ===== TARJETA LOGIN COMPACTA ===== */
+.login-container {
+    width: 100%;
+    max-width: 380px; /* Más compacto que 450px */
+    background-color: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== HEADER COMPACTO ===== */
+.login-header {
+    background: linear-gradient(to right, #1a2980, #26d0ce);
+    color: white;
+    padding: 20px 15px;
+    text-align: center;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo-img {
+    height: 50px; /* Logo pequeño */
+    width: auto;
+    margin-bottom: 10px;
+    filter: brightness(0) invert(1);
+}
+
+.logo h1 {
+    font-size: 1.4rem; /* Texto más pequeño */
+    margin-bottom: 3px;
+    font-weight: 700;
+}
+
+.login-header p {
+    font-size: 0.8rem; /* Texto más pequeño */
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* ===== FORMULARIO COMPACTO ===== */
+.login-form-container {
+    padding: 25px 20px 20px 20px; /* Padding reducido */
+}
+
+.login-form-container h2 {
+    color: #1a2980;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+/* Campos de formulario compactos */
+.form-group {
+    margin-bottom: 15px; /* Menos espacio entre campos */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.form-group label i {
+    margin-right: 6px;
+    color: #26d0ce;
+    font-size: 0.9rem;
+}
+
+.form-group input, 
+.form-group select {
+    width: 100%;
+    padding: 10px 12px; /* Inputs más pequeños */
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s;
+    background-color: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #26d0ce;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(38, 208, 206, 0.2);
+}
+
+/* ===== BOTÓN COMPACTO ===== */
+.btn-login {
+    width: 100%;
+    padding: 12px; /* Botón más pequeño */
+    background: linear-gradient(to right, #1a2980, #26d0ce);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.btn-login i {
+    margin-right: 8px;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== CREDENCIALES COMPACTAS ===== */
+.demo-credentials {
+    margin-top: 15px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.75rem; /* Texto más pequeño */
+    border-left: 4px solid #26d0ce;
+}
+
+.demo-credentials p {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.demo-credentials strong {
+    color: #1a2980;
+}
+
+/* ===== FOOTER COMPACTO ===== */
+.login-footer {
+    text-align: center;
+    padding: 15px;
+    color: #666;
+    font-size: 0.75rem; /* Texto más pequeño */
+    border-top: 1px solid #eee;
+    background-color: white;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 500px) {
+    .login-container {
+        max-width: 350px;
+    }
+    
+    .login-form-container {
+        padding: 20px 15px 15px 15px;
+    }
+    
+    .logo-img {
+        height: 45px;
+    }
+    
+    .logo h1 {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .login-container {
+        max-width: 320px;
+    }
+    
+    .login-form-container {
+        padding: 15px 12px 12px 12px;
+    }
+    
+    .logo-img {
+        height: 40px;
+    }
+}
+/* LOGIN HEADER */
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-logo {
+    max-width: 150px;
+    max-height: 150px;
+    margin-bottom: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.login-header h1 {
+    color: #2c3e50;
+    margin: 10px 0;
+    font-size: 2.2em;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    font-size: 1.1em;
+    margin-top: 5px;
+}
+
+/* CREDENCIALES DE PRUEBA */
+.test-credentials {
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 15px;
+    margin-top: 25px;
+    border-radius: 5px;
+}
+
+.test-credentials h3 {
+    color: #2c3e50;
+    margin-top: 0;
+    font-size: 1.1em;
+}
+
+.test-credentials ul {
+    margin: 10px 0 5px 0;
+    padding-left: 20px;
+}
+
+.test-credentials li {
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.test-credentials code {
+    background-color: #ecf0f1;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+}

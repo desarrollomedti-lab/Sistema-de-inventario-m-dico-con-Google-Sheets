@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MED CENTRO MÉDICO - Seguimiento Tickets</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+            <div class="logo">
+    <img src="../public/logo.png" alt="MED CENTRO MÉDICO" class="logo-img">
+    <span>MED CENTRO MÉDICO</span>
+</div>
+                <div class="user-info">
+                    <span class="user-name">Usuario</span>
+                    
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="app-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="inventario.html" class="nav-link" data-role="almacen,admin"><i class="fas fa-boxes"></i> Inventario</a></li>
+                <li><a href="tickets.html" class="nav-link" data-role="enfermeria,admin"><i class="fas fa-clipboard-list"></i> Nuevo Ticket</a></li>
+                <li><a href="seguimiento.html" class="nav-link active"><i class="fas fa-search"></i> Seguimiento Tickets</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="app-main">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-search"></i> Seguimiento de Tickets</h1>
+                <div class="filtros">
+                    <select id="filtroEstado" class="form-control" style="width: 150px; display: inline-block;">
+                        <option value="todos">Todos los estados</option>
+                        <option value="pendiente">Pendientes</option>
+                        <option value="proceso">En proceso</option>
+                        <option value="completado">Completados</option>
+                    </select>
+                    <input type="text" id="buscarTicket" class="form-control" placeholder="Buscar por paciente, habitación..." style="width: 250px; display: inline-block; margin-left: 10px;">
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-clipboard-check"></i> Tickets de Solicitud</h2>
+                    <div class="estadisticas-rapidas">
+                        <span class="badge badge-warning" id="contadorPendientes">0 Pendientes</span>
+                        <span class="badge badge-info" id="contadorProceso">0 En proceso</span>
+                        <span class="badge badge-success" id="contadorCompletados">0 Completados</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table" id="tablaTickets">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Paciente</th>
+                                    <th>Habitación</th>
+                                    <th>Productos</th>
+                                    <th>Solicitante</th>
+                                    <th>Prioridad</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Tickets se cargarán con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-file-alt"></i> Detalle del Ticket</h2>
+                            <div class="ticket-actions" id="ticketActions" style="display: none;">
+                                <button class="btn btn-success btn-sm" id="btnMarcarProceso">
+                                    <i class="fas fa-play"></i> Marcar en Proceso
+                                </button>
+                                <button class="btn btn-primary btn-sm" id="btnMarcarCompletado">
+                                    <i class="fas fa-check"></i> Marcar Completado
+                                </button>
+                                <button class="btn btn-danger btn-sm" id="btnCancelarTicket">
+                                    <i class="fas fa-times"></i> Cancelar Ticket
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="detalleTicket">
+                                <div class="mensaje-vacio">
+                                    <i class="fas fa-search fa-3x"></i>
+                                    <h3>Selecciona un ticket para ver los detalles</h3>
+                                    <p>Haz clic en cualquier ticket de la tabla para ver su información completa</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-chart-pie"></i> Estadísticas</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="estadistica-item">
+                                <div class="estadistica-header">
+                                    <span>Tickets por Prioridad</span>
+                                </div>
+                                <div class="estadistica-data">
+                                    <div class="prioridad-item">
+                                        <span class="prioridad-label">Alta/Urgente:</span>
+                                        <span class="prioridad-valor" id="prioridadAlta">0</span>
+                                    </div>
+                                    <div class="prioridad-item">
+                                        <span class="prioridad-label">Media:</span>
+                                        <span class="prioridad-valor" id="prioridadMedia">0</span>
+                                    </div>
+                                    <div class="prioridad-item">
+                                        <span class="prioridad-label">Baja:</span>
+                                        <span class="prioridad-valor" id="prioridadBaja">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="estadistica-item" style="margin-top: 20px;">
+                                <div class="estadistica-header">
+                                    <span>Tiempo Promedio de Atención</span>
+                                </div>
+                                <div class="estadistica-data">
+                                    <div class="tiempo-promedio">
+                                        <i class="fas fa-clock"></i>
+                                        <span id="tiempoPromedio">0 horas</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="estadistica-item" style="margin-top: 20px;">
+                                <div class="estadistica-header">
+                                    <span>Productos más Solicitados</span>
+                                </div>
+                                <div class="estadistica-data">
+                                    <div id="topProductos">
+                                        <!-- Productos se cargarán aquí -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2025 MED CENTRO MÉDICO. Sistema de Gestión de Inventario.</p>
+            <p><small>v1.0.0</small></p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/tickets.js"></script>
+    <script src="js/seguimiento.js"></script>
+    <style>
+        .mensaje-vacio {
+            text-align: center;
+            padding: 50px 20px;
+            color: #6c757d;
+        }
+        
+        .mensaje-vacio i {
+            margin-bottom: 20px;
+            color: #dee2e6;
+        }
+        
+        .mensaje-vacio h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .estadisticas-rapidas {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .estadistica-item {
+            margin-bottom: 15px;
+        }
+        
+        .estadistica-header {
+            font-weight: 600;
+            color: #1a2980;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        
+        .prioridad-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .prioridad-label {
+            color: #495057;
+        }
+        
+        .prioridad-valor {
+            font-weight: 600;
+            color: #1a2980;
+        }
+        
+        .tiempo-promedio {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .tiempo-promedio i {
+            font-size: 1.5rem;
+            color: #26d0ce;
+            margin-right: 10px;
+        }
+        
+        .tiempo-promedio span {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a2980;
+        }
+        
+        .filtros {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</body>
+</html>

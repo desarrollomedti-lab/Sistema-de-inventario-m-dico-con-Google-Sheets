@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MED CENTRO MÉDICO - Nuevo Ticket</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ESTILOS OPTIMIZADOS */
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 160px);
+        }
+        
+        .content-row {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .main-content {
+            flex: 3;
+            min-width: 0;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Tarjetas del sidebar optimizadas */
+        .sidebar-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 200px;
+        }
+        
+        .sidebar-card .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        /* SECCIÓN DE DETALLE DE TICKET (NUEVA) */
+        .ticket-detalle-container {
+            display: none; /* Inicialmente oculta */
+            margin-top: 20px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .ticket-detalle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #26d0ce;
+        }
+        
+        .ticket-detalle-header h3 {
+            color: #1a2980;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ticket-detalle-content {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .ticket-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-group {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #26d0ce;
+        }
+        
+        .info-group h4 {
+            color: #1a2980;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-item {
+            display: flex;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 120px;
+        }
+        
+        .info-value {
+            color: #333;
+            flex: 1;
+        }
+        
+        /* Tabla de productos en detalle */
+        .detalle-productos {
+            margin-top: 20px;
+        }
+        
+        .detalle-productos h4 {
+            color: #1a2980;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Tickets recientes optimizados */
+        #ticketsRecientes {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 400px;
+            min-height: 250px;
+            padding-right: 5px;
+        }
+        
+        .ticket-reciente {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #f39c12;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e9ecef;
+        }
+        
+        .ticket-reciente:hover {
+            transform: translateX(3px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            background-color: white;
+        }
+        
+        .ticket-reciente.active {
+            border-left: 4px solid #26d0ce;
+            background-color: #e6f7f7;
+            box-shadow: 0 3px 10px rgba(38, 208, 206, 0.2);
+        }
+        
+        .ticket-reciente-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .ticket-reciente-id {
+            font-weight: 700;
+            color: #1a2980;
+            font-size: 0.95rem;
+        }
+        
+        .ticket-reciente-estado {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .ticket-reciente-info {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .ticket-reciente-info i {
+            margin-right: 5px;
+            color: #26d0ce;
+            font-size: 0.8rem;
+        }
+        
+        /* Badges para estados */
+        .badge-estado {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-pendiente { background-color: #fff3cd; color: #856404; }
+        .badge-proceso { background-color: #d1ecf1; color: #0c5460; }
+        .badge-completado { background-color: #d4edda; color: #155724; }
+        .badge-cancelado { background-color: #f8d7da; color: #721c24; }
+        
+        /* Botón para cerrar detalle */
+        .btn-cerrar-detalle {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-cerrar-detalle:hover {
+            background-color: #f8f9fa;
+            color: #e74c3c;
+        }
+        
+        /* MODAL PARA ENVÍO DE TICKET */
+        .modal-ticket-envio {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModal 0.3s ease;
+        }
+        
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-ticket-contenido {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideUpModal 0.4s ease;
+        }
+        
+        @keyframes slideUpModal {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-ticket-header {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-ticket-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-cerrar-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        
+        .btn-cerrar-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-ticket-body {
+            padding: 25px;
+        }
+        
+        .ticket-confirmacion {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .confirmacion-icono {
+            color: #2ecc71;
+            font-size: 3rem;
+        }
+        
+        .confirmacion-mensaje h4 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+        }
+        
+        .confirmacion-mensaje p {
+            margin: 0;
+            color: #7f8c8d;
+        }
+        
+        .ticket-resumen-modal {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .resumen-item-modal {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .resumen-item-modal:last-child {
+            border-bottom: none;
+        }
+        
+        .resumen-item-modal span {
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .resumen-item-modal strong {
+            color: #2c3e50;
+        }
+        
+        .modal-ticket-acciones {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn-modal {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-modal-imprimir {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: white;
+        }
+        
+        .btn-modal-imprimir:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 41, 128, 0.3);
+        }
+        
+        .btn-modal-secundario {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .btn-modal-secundario:hover {
+            background: #dee2e6;
+        }
+        
+        /* ESTILOS PARA IMPRESIÓN DE TICKET */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            #ticket-impresion, #ticket-impresion * {
+                visibility: visible;
+            }
+            
+            #ticket-impresion {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80mm;
+                padding: 0;
+                margin: 0;
+                font-size: 12px;
+                line-height: 1.2;
+                background: white;
+            }
+            
+            .ticket-impresion-contenido {
+                padding: 10px;
+                font-family: 'Courier New', monospace;
+            }
+            
+            .ticket-impresion-header {
+                text-align: center;
+                margin-bottom: 10px;
+                border-bottom: 1px dashed #000;
+                padding-bottom: 8px;
+            }
+            
+            .ticket-impresion-header h2 {
+                font-size: 18px;
+                margin: 0 0 5px 0;
+            }
+            
+            .ticket-impresion-header p {
+                margin: 3px 0;
+                font-size: 11px;
+            }
+            
+            .ticket-impresion-info {
+                margin-bottom: 10px;
+            }
+            
+            .info-linea {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 4px;
+            }
+            
+            .info-label {
+                font-weight: bold;
+                font-size: 11px;
+            }
+            
+            .info-value {
+                font-size: 11px;
+            }
+            
+            .ticket-divider {
+                border: none;
+                border-top: 1px dashed #000;
+                margin: 10px 0;
+            }
+            
+            .ticket-productos-impresion h4 {
+                text-align: center;
+                margin: 8px 0;
+                font-size: 13px;
+            }
+            
+            .tabla-ticket {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 10px;
+            }
+            
+            .tabla-ticket th {
+                border-bottom: 1px solid #000;
+                padding: 5px 2px;
+                text-align: left;
+            }
+            
+            .tabla-ticket td {
+                padding: 4px 2px;
+                border-bottom: 1px dotted #ccc;
+            }
+            
+            .ticket-total {
+                margin-top: 10px;
+                font-weight: bold;
+            }
+            
+            .total-linea {
+                display: flex;
+                justify-content: space-between;
+                font-size: 11px;
+            }
+            
+            .ticket-footer {
+                text-align: center;
+                margin-top: 15px;
+                padding-top: 10px;
+                border-top: 1px dashed #000;
+            }
+            
+            .codigo-barras {
+                margin: 10px 0;
+            }
+            
+            .codigo-texto {
+                font-family: 'Libre Barcode 128', cursive;
+                font-size: 36px;
+                letter-spacing: 3px;
+            }
+            
+            .mensaje-footer {
+                font-size: 9px;
+                margin: 3px 0;
+                color: #666;
+            }
+            
+            /* Ocultar todo excepto el ticket de impresión */
+            .modal-ticket-envio,
+            .modal-ticket-contenido,
+            .btn-modal {
+                display: none !important;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .content-row {
+                flex-direction: column;
+            }
+            
+            .sidebar-content {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .modal-ticket-contenido {
+                width: 95%;
+            }
+            
+            .modal-ticket-acciones {
+                flex-direction: column;
+            }
+            
+            .btn-modal {
+                width: 100%;
+            }
+            
+            .ticket-confirmacion {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="../public/logo.png" alt="MED CENTRO MÉDICO" class="logo-img">
+                    <span>MED CENTRO MÉDICO</span>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Usuario</span>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="app-nav">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="inventario.html" class="nav-link" data-role="almacen,admin"><i class="fas fa-boxes"></i> Inventario</a></li>
+                <li><a href="tickets.html" class="nav-link active"><i class="fas fa-clipboard-list"></i> Nuevo Ticket</a></li>
+                <li><a href="seguimiento.html" class="nav-link" data-role="almacen,enfermeria,admin"><i class="fas fa-search"></i> Seguimiento Tickets</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="app-main">
+        <div class="container page-container">
+            <div class="page-header">
+                <h1 class="page-title"><i class="fas fa-clipboard-list"></i> Nuevo Ticket de Solicitud</h1>
+            </div>
+            
+            <div class="content-row">
+                <div class="main-content">
+                    <!-- FORMULARIO PARA NUEVO TICKET (se mantiene igual) -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-edit"></i> Información del Paciente</h2>
+                        </div>
+                        <div class="card-body">
+                            <form id="formTicketInfo">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="pacienteNombre">Nombre del Paciente *</label>
+                                            <input type="text" id="pacienteNombre" class="form-control" placeholder="Ej: Juan Pérez" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="habitacion">Habitación / Área *</label>
+                                            <input type="text" id="habitacion" class="form-control" placeholder="Ej: 201, UCI, Emergencia" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="solicitante">Solicitante *</label>
+                                            <input type="text" id="solicitante" class="form-control" placeholder="Nombre del solicitante" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <label for="prioridad">Prioridad *</label>
+                                            <select id="prioridad" class="form-control" required>
+                                                <option value="baja">Baja</option>
+                                                <option value="media" selected>Media</option>
+                                                <option value="alta">Alta</option>
+                                                <option value="urgente">Urgente</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="observaciones">Observaciones</label>
+                                    <textarea id="observaciones" class="form-control" rows="3" placeholder="Notas adicionales sobre la solicitud..."></textarea>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- SECCIÓN DE PRODUCTOS SOLICITADOS (se mantiene igual) -->
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-box-open"></i> Productos Solicitados</h2>
+                            <div>
+                                <button type="button" class="btn btn-primary btn-sm" id="btnAgregarProducto">
+                                    <i class="fas fa-plus"></i> Agregar Producto
+                                </button>
+                                <button type="button" class="btn btn-success btn-sm" id="btnGuardarProductos" style="display: none;">
+                                    <i class="fas fa-check"></i> Guardar Selección
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" id="btnCancelarSeleccion" style="display: none;">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="mensajeSinProductos" class="text-center" style="padding: 30px; color: #6c757d;">
+                                <i class="fas fa-box-open fa-2x mb-3"></i>
+                                <p>No hay productos agregados al ticket</p>
+                                <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="btnAgregarPrimerProducto">
+                                    <i class="fas fa-plus"></i> Agregar primer producto
+                                </button>
+                            </div>
+                            
+                            <div class="table-container" id="tablaProductosSeleccionados" style="display: none;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Cantidad</th>
+                                            <th>Disponible</th>
+                                            <th>Subtotal</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productosSeleccionadosBody">
+                                        <!-- Aquí van los productos seleccionados -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div id="seleccionProductos" style="display: none; margin-top: 20px;">
+                                <h4><i class="fas fa-search"></i> Seleccionar Productos</h4>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar producto...">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select id="filtroCategoria" class="form-control">
+                                            <option value="">Todas las categorías</option>
+                                            <option value="Insumos">Insumos</option>
+                                            <option value="Curaciones">Curaciones</option>
+                                            <option value="Medicamentos">Medicamentos</option>
+                                            <option value="Limpieza">Limpieza</option>
+                                            <option value="Protección">Protección</option>
+                                            <option value="Instrumental">Instrumental</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-container">
+                                    <table class="table" id="tablaDisponibles">
+                                        <thead>
+                                            <tr>
+                                                <th width="50px">Seleccionar</th>
+                                                <th>Producto</th>
+                                                <th>Categoría</th>
+                                                <th>Disponible</th>
+                                                <th>Unidad</th>
+                                                <th>Cantidad</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="productosDisponiblesBody">
+                                            <!-- Aquí se cargarán los productos disponibles -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- NUEVA SECCIÓN: DETALLE DEL TICKET SELECCIONADO -->
+                    <div id="ticketDetalleContainer" class="ticket-detalle-container">
+                        <div class="ticket-detalle-header">
+                            <h3><i class="fas fa-clipboard-check"></i> Detalle del Ticket Seleccionado</h3>
+                            <button class="btn-cerrar-detalle" id="btnCerrarDetalle">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="ticket-detalle-content">
+                            <div class="ticket-info-grid">
+                                <div class="info-group">
+                                    <h4><i class="fas fa-user-injured"></i> Información del Paciente</h4>
+                                    <div class="info-item">
+                                        <span class="info-label">Paciente:</span>
+                                        <span class="info-value" id="detallePaciente">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Habitación:</span>
+                                        <span class="info-value" id="detalleHabitacion">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Solicitante:</span>
+                                        <span class="info-value" id="detalleSolicitante">-</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-group">
+                                    <h4><i class="fas fa-info-circle"></i> Detalles del Ticket</h4>
+                                    <div class="info-item">
+                                        <span class="info-label">Ticket ID:</span>
+                                        <span class="info-value" id="detalleTicketId">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Estado:</span>
+                                        <span class="info-value" id="detalleEstado">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Prioridad:</span>
+                                        <span class="info-value" id="detallePrioridad">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Fecha:</span>
+                                        <span class="info-value" id="detalleFecha">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="info-group">
+                                <h4><i class="fas fa-sticky-note"></i> Observaciones</h4>
+                                <div id="detalleObservaciones" style="background: white; padding: 10px; border-radius: 5px; border: 1px solid #e0e0e0;">
+                                    Sin observaciones
+                                </div>
+                            </div>
+                            
+                            <div class="detalle-productos">
+                                <h4><i class="fas fa-boxes"></i> Productos Solicitados</h4>
+                                <div class="table-container">
+                                    <table class="table" id="tablaDetalleProductos">
+                                        <thead>
+                                            <tr>
+                                                <th>Producto</th>
+                                                <th>Cantidad</th>
+                                                <th>Unidad</th>
+                                                <th>Estado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="detalleProductosBody">
+                                            <tr>
+                                                <td colspan="4" class="text-center">No hay productos registrados</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-content">
+                    <!-- Tarjeta de Enviar Ticket -->
+                    <div class="card sidebar-card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-paper-plane"></i> Enviar Ticket</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="resumen-ticket">
+                                <h3>Resumen del Ticket</h3>
+                                <div class="resumen-item">
+                                    <span>Paciente:</span>
+                                    <strong id="resumenPaciente">No especificado</strong>
+                                </div>
+                                <div class="resumen-item">
+                                    <span>Habitación:</span>
+                                    <strong id="resumenHabitacion">No especificada</strong>
+                                </div>
+                                <div class="resumen-item">
+                                    <span>Productos:</span>
+                                    <strong id="resumenProductos">0</strong>
+                                </div>
+                                <div class="resumen-item">
+                                    <span>Prioridad:</span>
+                                    <strong id="resumenPrioridad">Media</strong>
+                                </div>
+                                <div class="resumen-item">
+                                    <span>Estado:</span>
+                                    <strong class="badge badge-warning">Pendiente</strong>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-success btn-block" id="btnEnviarTicket">
+                                <i class="fas fa-paper-plane"></i> Enviar Ticket a Almacén
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-block" id="btnGuardarBorrador">
+                                <i class="fas fa-save"></i> Guardar como Borrador
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tarjeta de Tickets Recientes -->
+                    <div class="card sidebar-card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-history"></i> Tickets Recientes</h2>
+                        </div>
+                        <div class="card-body">
+                            <div id="ticketsRecientes">
+                                <!-- Tickets recientes se cargarán aquí -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2025 MED CENTRO MÉDICO. Sistema de Gestión de Inventario.</p>
+            <p><small>v1.0.0</small></p>
+        </div>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Variables globales
+        let productosSeleccionados = [];
+        let productosDisponibles = [];
+        let modoSeleccion = false;
+        let ticketSeleccionado = null;
+
+        // Datos de ejemplo para tickets
+        const ticketsEjemplo = [
+            { 
+                id: 1001, 
+                paciente: "Juan Pérez", 
+                habitacion: "201", 
+                solicitante: "Dra. García",
+                prioridad: "Alta",
+                estado: "completado", 
+                fecha: "2023-10-15",
+                observaciones: "Paciente con diagnóstico de neumonía, requiere oxígeno adicional",
+                productos: [
+                    { nombre: "Mascarilla N95", cantidad: 2, unidad: "unidad", estado: "Entregado" },
+                    { nombre: "Guantes de látex", cantidad: 5, unidad: "par", estado: "Entregado" },
+                    { nombre: "Jeringa 10ml", cantidad: 3, unidad: "unidad", estado: "Entregado" }
+                ]
+            },
+            { 
+                id: 1002, 
+                paciente: "María González", 
+                habitacion: "305", 
+                solicitante: "Enf. Rodríguez",
+                prioridad: "Media",
+                estado: "proceso", 
+                fecha: "2023-10-16",
+                observaciones: "Material para curación diaria",
+                productos: [
+                    { nombre: "Gasas estériles", cantidad: 1, unidad: "paquete", estado: "En camino" },
+                    { nombre: "Alcohol antiséptico", cantidad: 2, unidad: "litro", estado: "Pendiente" }
+                ]
+            },
+            { 
+                id: 1003, 
+                paciente: "Carlos Sánchez", 
+                habitacion: "102", 
+                solicitante: "Dr. Fernández",
+                prioridad: "Urgente",
+                estado: "pendiente", 
+                fecha: "2023-10-17",
+                observaciones: "URGENTE: Paciente en UCI requiere medicamentos",
+                productos: [
+                    { nombre: "Termómetro digital", cantidad: 1, unidad: "unidad", estado: "Pendiente" },
+                    { nombre: "Agua oxigenada", cantidad: 1, unidad: "litro", estado: "Pendiente" }
+                ]
+            }
+        ];
+
+        const productosEjemplo = [
+            { id: 1, codigo: 'MED001', nombre: 'Guantes de látex', categoria: 'Insumos', stock: 150, unidad: 'par', ubicacion: 'Estante A1' },
+            { id: 2, codigo: 'MED002', nombre: 'Jeringa 10ml', categoria: 'Insumos', stock: 200, unidad: 'unidad', ubicacion: 'Estante B2' },
+            { id: 3, codigo: 'MED003', nombre: 'Gasas estériles', categoria: 'Curaciones', stock: 80, unidad: 'paquete', ubicacion: 'Estante C3' },
+            { id: 4, codigo: 'MED004', nombre: 'Alcohol antiséptico', categoria: 'Limpieza', stock: 45, unidad: 'litro', ubicacion: 'Estante D4' },
+            { id: 5, codigo: 'MED005', nombre: 'Mascarilla N95', categoria: 'Protección', stock: 120, unidad: 'unidad', ubicacion: 'Estante A2' },
+            { id: 6, codigo: 'MED006', nombre: 'Termómetro digital', categoria: 'Instrumental', stock: 15, unidad: 'unidad', ubicacion: 'Estante E1' },
+            { id: 7, codigo: 'MED007', nombre: 'Agua oxigenada', categoria: 'Curaciones', stock: 25, unidad: 'litro', ubicacion: 'Estante F3' },
+            { id: 8, codigo: 'MED008', nombre: 'Tirita adhesiva', categoria: 'Curaciones', stock: 90, unidad: 'caja', ubicacion: 'Estante B1' }
+        ];
+
+        // Cargar datos cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', function() {
+            productosDisponibles = [...productosEjemplo];
+            
+            // Configurar botones
+            setupBotonesProductos();
+            
+            // Cargar productos disponibles
+            cargarProductosDisponibles();
+            
+            // Cargar tickets recientes
+            cargarTicketsRecientes();
+            
+            // Configurar botones de ticket
+            setupBotonesTicket();
+            
+            // Configurar evento para cerrar detalle
+            document.getElementById('btnCerrarDetalle').addEventListener('click', cerrarDetalleTicket);
+            
+            // Actualizar resumen en tiempo real
+            document.getElementById('pacienteNombre').addEventListener('input', actualizarResumenTicket);
+            document.getElementById('habitacion').addEventListener('input', actualizarResumenTicket);
+            document.getElementById('prioridad').addEventListener('change', actualizarResumenTicket);
+        });
+
+        // Cargar tickets recientes en la barra lateral
+        function cargarTicketsRecientes() {
+            const container = document.getElementById('ticketsRecientes');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (ticketsEjemplo.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center" style="padding: 20px; color: #6c757d;">
+                        <i class="fas fa-clipboard-list fa-2x mb-3"></i>
+                        <p>No hay tickets recientes</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            ticketsEjemplo.forEach(ticket => {
+                const ticketElement = document.createElement('div');
+                ticketElement.className = 'ticket-reciente';
+                ticketElement.dataset.ticketId = ticket.id;
+                
+                const estadoText = {
+                    'pendiente': 'Pendiente',
+                    'proceso': 'En Proceso',
+                    'completado': 'Completado',
+                    'cancelado': 'Cancelado'
+                };
+                
+                const estadoColor = {
+                    'pendiente': '#f39c12',
+                    'proceso': '#3498db',
+                    'completado': '#2ecc71',
+                    'cancelado': '#e74c3c'
+                };
+                
+                ticketElement.innerHTML = `
+                    <div class="ticket-reciente-header">
+                        <div class="ticket-reciente-id">#${ticket.id}</div>
+                        <div class="ticket-reciente-estado" style="background-color: ${estadoColor[ticket.estado] || '#95a5a6'}">
+                            ${estadoText[ticket.estado] || ticket.estado}
+                        </div>
+                    </div>
+                    <div class="ticket-reciente-info">
+                        <div><i class="fas fa-user-injured"></i> ${ticket.paciente}</div>
+                        <div><i class="fas fa-bed"></i> Hab. ${ticket.habitacion}</div>
+                        <div><i class="fas fa-calendar"></i> ${ticket.fecha}</div>
+                    </div>
+                `;
+                
+                // Agregar evento para mostrar detalle
+                ticketElement.addEventListener('click', function() {
+                    const ticketId = parseInt(this.dataset.ticketId);
+                    mostrarDetalleTicket(ticketId);
+                    
+                    // Remover clase active de todos los tickets
+                    document.querySelectorAll('.ticket-reciente').forEach(t => {
+                        t.classList.remove('active');
+                    });
+                    
+                    // Agregar clase active al ticket seleccionado
+                    this.classList.add('active');
+                });
+                
+                container.appendChild(ticketElement);
+            });
+        }
+
+        // Mostrar detalle del ticket en la sección principal
+        function mostrarDetalleTicket(ticketId) {
+            const ticket = ticketsEjemplo.find(t => t.id === ticketId);
+            if (!ticket) return;
+            
+            ticketSeleccionado = ticket;
+            
+            // Mostrar la sección de detalle
+            document.getElementById('ticketDetalleContainer').style.display = 'block';
+            
+            // Llenar información del ticket
+            document.getElementById('detalleTicketId').textContent = `#${ticket.id}`;
+            document.getElementById('detallePaciente').textContent = ticket.paciente;
+            document.getElementById('detalleHabitacion').textContent = ticket.habitacion;
+            document.getElementById('detalleSolicitante').textContent = ticket.solicitante;
+            document.getElementById('detalleFecha').textContent = ticket.fecha;
+            document.getElementById('detalleObservaciones').textContent = ticket.observaciones || 'Sin observaciones';
+            
+            // Estado con badge
+            const estadoText = {
+                'pendiente': 'Pendiente',
+                'proceso': 'En Proceso',
+                'completado': 'Completado',
+                'cancelado': 'Cancelado'
+            };
+            
+            const estadoClase = {
+                'pendiente': 'badge-pendiente',
+                'proceso': 'badge-proceso',
+                'completado': 'badge-completado',
+                'cancelado': 'badge-cancelado'
+            };
+            
+            document.getElementById('detalleEstado').innerHTML = 
+                `<span class="badge-estado ${estadoClase[ticket.estado]}">${estadoText[ticket.estado]}</span>`;
+            
+            // Prioridad con color
+            let prioridadClase = 'badge-proceso';
+            switch(ticket.prioridad.toLowerCase()) {
+                case 'urgente': prioridadClase = 'badge-cancelado'; break;
+                case 'alta': prioridadClase = 'badge-pendiente'; break;
+                case 'media': prioridadClase = 'badge-proceso'; break;
+                case 'baja': prioridadClase = 'badge-completado'; break;
+            }
+            
+            document.getElementById('detallePrioridad').innerHTML = 
+                `<span class="badge-estado ${prioridadClase}">${ticket.prioridad}</span>`;
+            
+            // Llenar tabla de productos
+            const tbody = document.getElementById('detalleProductosBody');
+            tbody.innerHTML = '';
+            
+            if (ticket.productos && ticket.productos.length > 0) {
+                ticket.productos.forEach(producto => {
+                    const row = document.createElement('tr');
+                    
+                    let estadoClase = '';
+                    switch(producto.estado.toLowerCase()) {
+                        case 'entregado': estadoClase = 'badge-completado'; break;
+                        case 'en camino': estadoClase = 'badge-proceso'; break;
+                        case 'pendiente': estadoClase = 'badge-pendiente'; break;
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${producto.nombre}</td>
+                        <td>${producto.cantidad}</td>
+                        <td>${producto.unidad}</td>
+                        <td><span class="badge-estado ${estadoClase}">${producto.estado}</span></td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center">No hay productos registrados</td>
+                    </tr>
+                `;
+            }
+            
+            // Hacer scroll suave hacia la sección de detalle
+            document.getElementById('ticketDetalleContainer').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Cerrar la sección de detalle del ticket
+        function cerrarDetalleTicket() {
+            document.getElementById('ticketDetalleContainer').style.display = 'none';
+            ticketSeleccionado = null;
+            
+            // Remover clase active de todos los tickets
+            document.querySelectorAll('.ticket-reciente').forEach(t => {
+                t.classList.remove('active');
+            });
+        }
+
+        // Configurar eventos de los botones de productos
+        function setupBotonesProductos() {
+            const btnAgregarProducto = document.getElementById('btnAgregarProducto');
+            if (btnAgregarProducto) {
+                btnAgregarProducto.addEventListener('click', entrarModoSeleccion);
+            }
+
+            const btnAgregarPrimerProducto = document.getElementById('btnAgregarPrimerProducto');
+            if (btnAgregarPrimerProducto) {
+                btnAgregarPrimerProducto.addEventListener('click', entrarModoSeleccion);
+            }
+
+            const btnGuardarProductos = document.getElementById('btnGuardarProductos');
+            if (btnGuardarProductos) {
+                btnGuardarProductos.addEventListener('click', guardarProductosSeleccionados);
+            }
+
+            const btnCancelarSeleccion = document.getElementById('btnCancelarSeleccion');
+            if (btnCancelarSeleccion) {
+                btnCancelarSeleccion.addEventListener('click', cancelarSeleccion);
+            }
+
+            const buscarProducto = document.getElementById('buscarProducto');
+            if (buscarProducto) {
+                buscarProducto.addEventListener('input', filtrarProductos);
+            }
+
+            const filtroCategoria = document.getElementById('filtroCategoria');
+            if (filtroCategoria) {
+                filtroCategoria.addEventListener('change', filtrarProductos);
+            }
+        }
+
+        function entrarModoSeleccion() {
+            modoSeleccion = true;
+            document.getElementById('mensajeSinProductos').style.display = 'none';
+            document.getElementById('seleccionProductos').style.display = 'block';
+            document.getElementById('tablaProductosSeleccionados').style.display = 'none';
+            document.getElementById('btnAgregarProducto').style.display = 'none';
+            document.getElementById('btnGuardarProductos').style.display = 'inline-block';
+            document.getElementById('btnCancelarSeleccion').style.display = 'inline-block';
+            cargarProductosDisponibles();
+        }
+
+        function salirModoSeleccion() {
+            modoSeleccion = false;
+            document.getElementById('seleccionProductos').style.display = 'none';
+            document.getElementById('btnAgregarProducto').style.display = 'inline-block';
+            document.getElementById('btnGuardarProductos').style.display = 'none';
+            document.getElementById('btnCancelarSeleccion').style.display = 'none';
+        }
+
+        function cancelarSeleccion() {
+            salirModoSeleccion();
+            if (productosSeleccionados.length === 0) {
+                document.getElementById('mensajeSinProductos').style.display = 'block';
+                document.getElementById('tablaProductosSeleccionados').style.display = 'none';
+            } else {
+                document.getElementById('tablaProductosSeleccionados').style.display = 'block';
+            }
+            document.querySelectorAll('.producto-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        function guardarProductosSeleccionados() {
+            const checkboxes = document.querySelectorAll('.producto-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Por favor seleccione al menos un producto');
+                return;
+            }
+
+            checkboxes.forEach(checkbox => {
+                const productoId = parseInt(checkbox.value);
+                const cantidadInput = document.getElementById(`cantidad-${productoId}`);
+                const cantidad = cantidadInput ? parseInt(cantidadInput.value) : 1;
+                const producto = productosDisponibles.find(p => p.id === productoId);
+                
+                if (producto && cantidad > 0) {
+                    const existente = productosSeleccionados.find(p => p.id === productoId);
+                    if (existente) {
+                        existente.cantidadSolicitada = cantidad;
+                    } else {
+                        productosSeleccionados.push({
+                            id: producto.id,
+                            codigo: producto.codigo,
+                            nombre: producto.nombre,
+                            categoria: producto.categoria,
+                            stockDisponible: producto.stock,
+                            cantidadSolicitada: cantidad,
+                            unidad: producto.unidad,
+                            subtotal: cantidad
+                        });
+                    }
+                }
+            });
+
+            actualizarTablaProductosSeleccionados();
+            salirModoSeleccion();
+            document.getElementById('tablaProductosSeleccionados').style.display = 'block';
+            actualizarResumenTicket();
+        }
+
+        function cargarProductosDisponibles() {
+            const tbody = document.getElementById('productosDisponiblesBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            productosDisponibles.forEach(producto => {
+                const seleccionado = productosSeleccionados.find(p => p.id === producto.id);
+                const cantidadSeleccionada = seleccionado ? seleccionado.cantidadSolicitada : 1;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="producto-checkbox" value="${producto.id}" ${seleccionado ? 'checked' : ''}></td>
+                    <td><strong>${producto.nombre}</strong><br><small class="text-muted">Código: ${producto.codigo}</small></td>
+                    <td><span class="badge badge-info">${producto.categoria}</span></td>
+                    <td><span class="${producto.stock < 20 ? 'text-danger' : 'text-success'}"><strong>${producto.stock}</strong> ${producto.unidad}</span></td>
+                    <td>${producto.unidad}</td>
+                    <td><input type="number" id="cantidad-${producto.id}" class="form-control form-control-sm" min="1" max="${producto.stock}" value="${cantidadSeleccionada}" style="width: 80px;" onchange="validarCantidad(${producto.id}, ${producto.stock})"></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filtrarProductos() {
+            const busqueda = document.getElementById('buscarProducto').value.toLowerCase();
+            const categoria = document.getElementById('filtroCategoria').value;
+            
+            const productosFiltrados = productosEjemplo.filter(producto => {
+                const coincideNombre = producto.nombre.toLowerCase().includes(busqueda) || 
+                                      producto.codigo.toLowerCase().includes(busqueda);
+                const coincideCategoria = !categoria || producto.categoria === categoria;
+                return coincideNombre && coincideCategoria;
+            });
+            
+            productosDisponibles = productosFiltrados;
+            cargarProductosDisponibles();
+        }
+
+        function validarCantidad(productoId, stockMaximo) {
+            const input = document.getElementById(`cantidad-${productoId}`);
+            if (!input) return;
+            
+            let valor = parseInt(input.value);
+            if (isNaN(valor) || valor < 1) valor = 1;
+            else if (valor > stockMaximo) {
+                valor = stockMaximo;
+                alert(`Cantidad máxima disponible: ${stockMaximo} unidades`);
+            }
+            
+            input.value = valor;
+            const checkbox = document.querySelector(`.producto-checkbox[value="${productoId}"]`);
+            if (checkbox && valor > 0) checkbox.checked = true;
+        }
+
+        function actualizarTablaProductosSeleccionados() {
+            const tbody = document.getElementById('productosSeleccionadosBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            if (productosSeleccionados.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="5" class="text-center" style="color: #6c757d; padding: 30px;">
+                        <i class="fas fa-box-open fa-2x mb-2"></i><br>No hay productos seleccionados
+                    </td></tr>
+                `;
+                return;
+            }
+            
+            productosSeleccionados.forEach((producto, index) => {
+                const claseDisponible = producto.cantidadSolicitada > producto.stockDisponible ? 'text-danger' : 'text-success';
+                const textoDisponible = producto.cantidadSolicitada > producto.stockDisponible ? 
+                    `Insuficiente (${producto.stockDisponible})` : `Disponible (${producto.stockDisponible})`;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${producto.nombre}</strong><br><small class="text-muted">${producto.codigo} • ${producto.categoria}</small></td>
+                    <td><div class="input-group input-group-sm" style="width: 120px;">
+                        <input type="number" id="edit-cantidad-${producto.id}" class="form-control" min="1" max="${producto.stockDisponible}" value="${producto.cantidadSolicitada}" onchange="actualizarCantidadSeleccionada(${producto.id}, ${index})">
+                        <div class="input-group-append"><span class="input-group-text">${producto.unidad}</span></div>
+                    </div></td>
+                    <td><span class="${claseDisponible}"><i class="fas ${producto.cantidadSolicitada > producto.stockDisponible ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${textoDisponible}</span></td>
+                    <td><strong>${producto.cantidadSolicitada} ${producto.unidad}</strong></td>
+                    <td><button class="btn btn-sm btn-danger" onclick="eliminarProductoSeleccionado(${index})"><i class="fas fa-trash"></i> Eliminar</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function actualizarCantidadSeleccionada(productoId, index) {
+            const input = document.getElementById(`edit-cantidad-${productoId}`);
+            if (!input) return;
+            
+            let nuevaCantidad = parseInt(input.value);
+            const producto = productosSeleccionados[index];
+            if (isNaN(nuevaCantidad) || nuevaCantidad < 1) nuevaCantidad = 1;
+            else if (nuevaCantidad > producto.stockDisponible) {
+                nuevaCantidad = producto.stockDisponible;
+                alert(`Cantidad máxima disponible: ${producto.stockDisponible} ${producto.unidad}`);
+            }
+            
+            input.value = nuevaCantidad;
+            producto.cantidadSolicitada = nuevaCantidad;
+            actualizarResumenTicket();
+        }
+
+        function eliminarProductoSeleccionado(index) {
+            if (confirm('¿Eliminar este producto del ticket?')) {
+                productosSeleccionados.splice(index, 1);
+                actualizarTablaProductosSeleccionados();
+                if (productosSeleccionados.length === 0) {
+                    document.getElementById('mensajeSinProductos').style.display = 'block';
+                    document.getElementById('tablaProductosSeleccionados').style.display = 'none';
+                }
+                actualizarResumenTicket();
+            }
+        }
+
+        function actualizarResumenTicket() {
+            const totalProductos = productosSeleccionados.length;
+            document.getElementById('resumenProductos').textContent = totalProductos;
+            
+            const paciente = document.getElementById('pacienteNombre').value;
+            const habitacion = document.getElementById('habitacion').value;
+            const prioridad = document.getElementById('prioridad').value;
+            
+            if (paciente) document.getElementById('resumenPaciente').textContent = paciente;
+            if (habitacion) document.getElementById('resumenHabitacion').textContent = habitacion;
+            if (prioridad) document.getElementById('resumenPrioridad').textContent = prioridad.charAt(0).toUpperCase() + prioridad.slice(1);
+        }
+
+        // VENTANA FLOTANTE PARA ENVÍO DE TICKET E IMPRESIÓN
+        function mostrarVentanaEnvioTicket(ticketData) {
+            // Crear modal si no existe
+            let modal = document.getElementById('modalEnvioTicket');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'modalEnvioTicket';
+                modal.className = 'modal-ticket-envio';
+                modal.innerHTML = `
+                    <div class="modal-ticket-contenido">
+                        <div class="modal-ticket-header">
+                            <h3><i class="fas fa-paper-plane"></i> Ticket Enviado Exitosamente</h3>
+                            <button class="btn-cerrar-modal"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="modal-ticket-body">
+                            <div class="ticket-confirmacion">
+                                <div class="confirmacion-icono">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="confirmacion-mensaje">
+                                    <h4>Ticket #<span id="modalTicketId">${ticketData.id}</span> enviado exitosamente</h4>
+                                    <p>El almacén ha sido notificado de tu solicitud.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="ticket-resumen-modal">
+                                <div class="resumen-item-modal">
+                                    <span><i class="fas fa-user-injured"></i> Paciente:</span>
+                                    <strong id="modalPaciente">${ticketData.paciente}</strong>
+                                </div>
+                                <div class="resumen-item-modal">
+                                    <span><i class="fas fa-bed"></i> Habitación:</span>
+                                    <strong id="modalHabitacion">${ticketData.habitacion}</strong>
+                                </div>
+                                <div class="resumen-item-modal">
+                                    <span><i class="fas fa-boxes"></i> Productos:</span>
+                                    <strong id="modalProductos">${ticketData.productos}</strong>
+                                </div>
+                                <div class="resumen-item-modal">
+                                    <span><i class="fas fa-exclamation-circle"></i> Prioridad:</span>
+                                    <strong id="modalPrioridad">${ticketData.prioridad}</strong>
+                                </div>
+                                <div class="resumen-item-modal">
+                                    <span><i class="fas fa-clipboard-check"></i> Estado:</span>
+                                    <strong id="modalEstado">${ticketData.estado}</strong>
+                                </div>
+                            </div>
+                            
+                            <div class="modal-ticket-acciones">
+                                <button class="btn-modal btn-modal-imprimir" id="btnImprimirTicket">
+                                    <i class="fas fa-print"></i> Imprimir Ticket
+                                </button>
+                                <button class="btn-modal btn-modal-secundario" id="btnCerrarModal">
+                                    <i class="fas fa-times"></i> Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- VISTA PARA IMPRESIÓN DE TICKET (OCULTA) -->
+                    <div id="ticket-impresion" style="display: none;">
+                        <div class="ticket-impresion-contenido">
+                            <div class="ticket-impresion-header">
+                                <h2>MED CENTRO MÉDICO</h2>
+                                <p>Ticket #<span class="ticket-id">${ticketData.id}</span></p>
+                                <p class="fecha-ticket">${new Date().toLocaleDateString('es-ES')} ${new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</p>
+                            </div>
+                            
+                            <div class="ticket-impresion-info">
+                                <div class="info-linea">
+                                    <span class="info-label">PACIENTE:</span>
+                                    <span class="info-value">${ticketData.paciente}</span>
+                                </div>
+                                <div class="info-linea">
+                                    <span class="info-label">HABITACIÓN:</span>
+                                    <span class="info-value">${ticketData.habitacion}</span>
+                                </div>
+                                <div class="info-linea">
+                                    <span class="info-label">SOLICITANTE:</span>
+                                    <span class="info-value">${document.getElementById('solicitante').value}</span>
+                                </div>
+                                <div class="info-linea">
+                                    <span class="info-label">PRIORIDAD:</span>
+                                    <span class="info-value">${ticketData.prioridad}</span>
+                                </div>
+                            </div>
+                            
+                            <hr class="ticket-divider">
+                            
+                            <div class="ticket-productos-impresion">
+                                <h4>PRODUCTOS SOLICITADOS</h4>
+                                <table class="tabla-ticket">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Cant</th>
+                                            <th>Unidad</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productos-ticket-body">
+                                        <!-- Productos se agregarán aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="ticket-total">
+                                <div class="total-linea">
+                                    <span>TOTAL PRODUCTOS:</span>
+                                    <span><strong>${ticketData.productos}</strong></span>
+                                </div>
+                            </div>
+                            
+                            <hr class="ticket-divider">
+                            
+                            <div class="ticket-footer">
+                                <div class="codigo-barras">
+                                    <div class="codigo-texto">#${ticketData.id}</div>
+                                </div>
+                                <p class="mensaje-footer">Ticket generado electrónicamente</p>
+                                <p class="mensaje-footer">MED CENTRO MÉDICO - Sistema de Gestión</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                // Agregar fuente de código de barras
+                const linkFont = document.createElement('link');
+                linkFont.href = 'https://fonts.googleapis.com/css2?family=Libre+Barcode+128&display=swap';
+                linkFont.rel = 'stylesheet';
+                document.head.appendChild(linkFont);
+            } else {
+                // Actualizar datos en el modal existente
+                modal.querySelector('#modalTicketId').textContent = ticketData.id;
+                modal.querySelector('#modalPaciente').textContent = ticketData.paciente;
+                modal.querySelector('#modalHabitacion').textContent = ticketData.habitacion;
+                modal.querySelector('#modalProductos').textContent = ticketData.productos;
+                modal.querySelector('#modalPrioridad').textContent = ticketData.prioridad;
+                modal.querySelector('#modalEstado').textContent = ticketData.estado;
+                
+                // Actualizar ticket de impresión
+                const ticketImpresion = modal.querySelector('#ticket-impresion');
+                ticketImpresion.querySelector('.ticket-id').textContent = ticketData.id;
+                ticketImpresion.querySelector('.fecha-ticket').textContent = 
+                    `${new Date().toLocaleDateString('es-ES')} ${new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}`;
+                ticketImpresion.querySelectorAll('.info-value')[0].textContent = ticketData.paciente;
+                ticketImpresion.querySelectorAll('.info-value')[1].textContent = ticketData.habitacion;
+                ticketImpresion.querySelectorAll('.info-value')[3].textContent = ticketData.prioridad;
+                ticketImpresion.querySelector('.codigo-texto').textContent = `#${ticketData.id}`;
+                ticketImpresion.querySelector('.total-linea strong').textContent = ticketData.productos;
+            }
+            
+            // Configurar productos en el ticket de impresión
+            const productosBody = modal.querySelector('#productos-ticket-body');
+            productosBody.innerHTML = '';
+            
+            if (productosSeleccionados.length > 0) {
+                productosSeleccionados.forEach(producto => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${producto.nombre.substring(0, 20)}${producto.nombre.length > 20 ? '...' : ''}</td>
+                        <td>${producto.cantidadSolicitada}</td>
+                        <td>${producto.unidad}</td>
+                    `;
+                    productosBody.appendChild(row);
+                });
+            } else {
+                productosBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; font-style: italic;">Sin productos</td>
+                    </tr>
+                `;
+            }
+            
+            // Mostrar modal
+            modal.style.display = 'flex';
+            
+            // Configurar eventos del modal
+            modal.querySelector('.btn-cerrar-modal').onclick = function() {
+                modal.style.display = 'none';
+            };
+            
+            modal.querySelector('#btnCerrarModal').onclick = function() {
+                modal.style.display = 'none';
+            };
+            
+            modal.querySelector('#btnImprimirTicket').onclick = function() {
+                // Abrir ventana de impresión
+                const contenidoImpresion = modal.querySelector('#ticket-impresion').innerHTML;
+                const ventanaImpresion = window.open('', '_blank', 'width=400,height=600');
+                ventanaImpresion.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="es">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Imprimir Ticket #${ticketData.id}</title>
+                        <style>
+                            @media print {
+                                body {
+                                    width: 80mm;
+                                    margin: 0;
+                                    padding: 0;
+                                    font-family: 'Courier New', monospace;
+                                }
+                                
+                                .ticket-impresion-contenido {
+                                    padding: 10px;
+                                    font-size: 12px;
+                                    line-height: 1.2;
+                                }
+                                
+                                .ticket-impresion-header {
+                                    text-align: center;
+                                    margin-bottom: 10px;
+                                    border-bottom: 1px dashed #000;
+                                    padding-bottom: 8px;
+                                }
+                                
+                                .ticket-impresion-header h2 {
+                                    font-size: 18px;
+                                    margin: 0 0 5px 0;
+                                }
+                                
+                                .ticket-impresion-header p {
+                                    margin: 3px 0;
+                                    font-size: 11px;
+                                }
+                                
+                                .info-linea {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    margin-bottom: 4px;
+                                }
+                                
+                                .info-label {
+                                    font-weight: bold;
+                                    font-size: 11px;
+                                }
+                                
+                                .ticket-divider {
+                                    border: none;
+                                    border-top: 1px dashed #000;
+                                    margin: 10px 0;
+                                }
+                                
+                                .ticket-productos-impresion h4 {
+                                    text-align: center;
+                                    margin: 8px 0;
+                                    font-size: 13px;
+                                }
+                                
+                                .tabla-ticket {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    font-size: 10px;
+                                }
+                                
+                                .tabla-ticket th {
+                                    border-bottom: 1px solid #000;
+                                    padding: 5px 2px;
+                                    text-align: left;
+                                }
+                                
+                                .tabla-ticket td {
+                                    padding: 4px 2px;
+                                    border-bottom: 1px dotted #ccc;
+                                }
+                                
+                                .ticket-footer {
+                                    text-align: center;
+                                    margin-top: 15px;
+                                    padding-top: 10px;
+                                    border-top: 1px dashed #000;
+                                }
+                                
+                                .codigo-texto {
+                                    font-family: 'Libre Barcode 128', cursive;
+                                    font-size: 36px;
+                                    letter-spacing: 3px;
+                                }
+                                
+                                .mensaje-footer {
+                                    font-size: 9px;
+                                    margin: 3px 0;
+                                    color: #666;
+                                }
+                            }
+                            
+                            @media screen {
+                                body {
+                                    padding: 20px;
+                                    font-family: Arial, sans-serif;
+                                }
+                                
+                                .boton-impresion {
+                                    background: #1a2980;
+                                    color: white;
+                                    padding: 10px 20px;
+                                    border: none;
+                                    border-radius: 5px;
+                                    cursor: pointer;
+                                    margin-bottom: 20px;
+                                }
+                            }
+                        </style>
+                        <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128&display=swap" rel="stylesheet">
+                    </head>
+                    <body>
+                        <button class="boton-impresion" onclick="window.print()">🖨️ Imprimir Ticket</button>
+                        <div>${contenidoImpresion}</div>
+                        <script>
+                            // Auto-imprimir si se prefiere
+                            // setTimeout(() => { window.print(); }, 500);
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                ventanaImpresion.document.close();
+                
+                // Cerrar modal después de un tiempo
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 500);
+            };
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            modal.onclick = function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            };
+        }
+
+        // MODIFICAR LA FUNCIÓN DEL BOTÓN ENVIAR TICKET
+        function setupBotonesTicket() {
+            const btnEnviarTicket = document.getElementById('btnEnviarTicket');
+            if (btnEnviarTicket) {
+                btnEnviarTicket.addEventListener('click', function() {
+                    const paciente = document.getElementById('pacienteNombre').value;
+                    const habitacion = document.getElementById('habitacion').value;
+                    const solicitante = document.getElementById('solicitante').value;
+                    const prioridad = document.getElementById('prioridad').value;
+                    const observaciones = document.getElementById('observaciones').value;
+                    
+                    if (!paciente || !habitacion || !solicitante) {
+                        alert('Por favor complete todos los campos obligatorios (*)');
+                        return;
+                    }
+                    
+                    if (productosSeleccionados.length === 0) {
+                        alert('Debe agregar al menos un producto al ticket');
+                        return;
+                    }
+                    
+                    // Generar ID de ticket único
+                    const ticketId = Math.floor(Math.random() * 9000) + 1000;
+                    
+                    // Datos para la ventana modal
+                    const ticketData = {
+                        id: ticketId,
+                        paciente: paciente,
+                        habitacion: habitacion,
+                        solicitante: solicitante,
+                        productos: productosSeleccionados.length,
+                        prioridad: prioridad.charAt(0).toUpperCase() + prioridad.slice(1),
+                        estado: 'Pendiente',
+                        fecha: new Date().toLocaleDateString('es-ES'),
+                        observaciones: observaciones
+                    };
+                    
+                    // Mostrar ventana modal de confirmación
+                    mostrarVentanaEnvioTicket(ticketData);
+                    
+                    // Limpiar formulario después de enviar
+                    resetearFormularioTicket();
+                    
+                    // Actualizar lista de tickets recientes después de un momento
+                    setTimeout(() => {
+                        cargarTicketsRecientes();
+                    }, 1000);
+                });
+            }
+            
+            const btnGuardarBorrador = document.getElementById('btnGuardarBorrador');
+            if (btnGuardarBorrador) {
+                btnGuardarBorrador.addEventListener('click', function() {
+                    const paciente = document.getElementById('pacienteNombre').value;
+                    if (!paciente) {
+                        alert('Por favor ingrese al menos el nombre del paciente');
+                        return;
+                    }
+                    alert('📄 Ticket guardado como borrador\n\nPuedes continuar editándolo más tarde.');
+                });
+            }
+        }
+
+        function resetearFormularioTicket() {
+            document.getElementById('formTicketInfo').reset();
+            productosSeleccionados = [];
+            actualizarTablaProductosSeleccionados();
+            document.getElementById('mensajeSinProductos').style.display = 'block';
+            document.getElementById('tablaProductosSeleccionados').style.display = 'none';
+            
+            document.getElementById('resumenPaciente').textContent = 'No especificado';
+            document.getElementById('resumenHabitacion').textContent = 'No especificada';
+            document.getElementById('resumenProductos').textContent = '0';
+            document.getElementById('resumenPrioridad').textContent = 'Media';
+        }
+    </script>
+</body>
+</html>
